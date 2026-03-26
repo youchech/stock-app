@@ -1,5 +1,5 @@
-import { useSelector, useDispatch } from 'react-redux'
 import { useEffect, useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { fetchProducts, deleteProductAPI } from '../features/productSlice'
 import ProductForm from './ProductForm'
 import { formatDate } from '../utils/formatDate'
@@ -7,116 +7,63 @@ import { formatDate } from '../utils/formatDate'
 function ProductList() {
   const dispatch = useDispatch()
   const products = useSelector(state => state.products.items)
-
   const [editProduct, setEditProduct] = useState(null)
-  const [filters, setFilters] = useState({
-    type: '',
-    color: '',
-    minPrice: '',
-    maxPrice: ''
-  })
+  const [filters, setFilters] = useState({ type: '', color: '' })
 
-  useEffect(() => {
-    dispatch(fetchProducts())
-  }, [dispatch])
+  useEffect(() => { dispatch(fetchProducts()) }, [dispatch])
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target
-    setFilters({ ...filters, [name]: value })
-  }
-
-  const filteredProducts = products.filter(p =>
+  const filtered = products.filter(p =>
     (filters.type === '' || p.type.toLowerCase().includes(filters.type.toLowerCase())) &&
-    (filters.color === '' || p.color.toLowerCase().includes(filters.color.toLowerCase())) &&
-    (filters.minPrice === '' || p.price >= parseFloat(filters.minPrice)) &&
-    (filters.maxPrice === '' || p.price <= parseFloat(filters.maxPrice))
+    (filters.color === '' || p.color.toLowerCase().includes(filters.color.toLowerCase()))
   )
 
   return (
-    <div className="flex flex-col items-center gap-5">
+    <div className="p-6 space-y-6">
+      {editProduct && <ProductForm editProduct={editProduct} onFinishEdit={() => setEditProduct(null)} />}
 
-      {/* EDIT FORM */}
-      {editProduct && (
-        <div className="w-96 p-4 bg-yellow-100 border rounded">
-          <h3 className="font-bold mb-2">Editing: {editProduct.ref}</h3>
-          <ProductForm editProduct={editProduct} onFinishEdit={() => setEditProduct(null)} />
-        </div>
-      )}
-
-      {/* FILTERS */}
-      <div className="flex flex-wrap gap-2 bg-gray-100 p-3 rounded shadow">
+      {/* Filters */}
+      <div className="flex gap-4 mb-4">
         <input
-          name="type"
-          placeholder="Type"
-          value={filters.type}
-          onChange={handleFilterChange}
-          className="border rounded px-2 py-1"
+          placeholder="Filter by Type"
+          className="border rounded px-3 py-2 w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={e => setFilters({ ...filters, type: e.target.value })}
         />
-
         <input
-          name="color"
-          placeholder="Color"
-          value={filters.color}
-          onChange={handleFilterChange}
-          className="border rounded px-2 py-1"
-        />
-
-        <input
-          name="minPrice"
-          type="number"
-          placeholder="Min"
-          value={filters.minPrice}
-          onChange={handleFilterChange}
-          className="border rounded px-2 py-1 w-20"
-        />
-
-        <input
-          name="maxPrice"
-          type="number"
-          placeholder="Max"
-          value={filters.maxPrice}
-          onChange={handleFilterChange}
-          className="border rounded px-2 py-1 w-20"
+          placeholder="Filter by Color"
+          className="border rounded px-3 py-2 w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={e => setFilters({ ...filters, color: e.target.value })}
         />
       </div>
 
-      <h2 className="text-xl font-bold">Products</h2>
-
-      {filteredProducts.length === 0 && <p>No products found</p>}
-
-      {filteredProducts.map(p => (
-        <div key={p.id} className="flex gap-4 w-96 bg-white p-3 rounded shadow">
-
-          {p.image && (
-            <img src={`http://localhost:5000${p.image}`} alt="" className="w-20 h-20 object-cover rounded" />
-          )}
-
-          <div className="flex-1">
-            <p className="font-semibold">{p.type} - {p.color}</p>
-            <p>Qty: {p.quantity} | Price: {p.price}</p>
-            <p>Ref: {p.ref}</p>
-            <p>{formatDate(p.dateAjout)}</p>
+      {/* Products grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filtered.map(p => (
+          <div key={p.id} className="bg-white rounded shadow p-4 flex flex-col items-center">
+            {p.image && <img src={`http://localhost:5000${p.image}`} alt="" className="w-32 h-32 object-cover rounded mb-3" />}
+            <div className="text-center">
+              <p className="font-semibold text-lg">{p.type}</p>
+              <p className="text-gray-500 mb-1">{p.color}</p>
+              <p className="mb-1">Ref: <span className="font-medium">{p.ref}</span></p>
+              <p className="mb-1">Qty: {p.quantity} | Price: {p.price}</p>
+              <p className="text-gray-400 text-sm">{formatDate(p.dateAjout)}</p>
+            </div>
+            <div className="flex gap-2 mt-3">
+              <button
+                className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition"
+                onClick={() => setEditProduct(p)}
+              >
+                Edit
+              </button>
+              <button
+                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                onClick={() => dispatch(deleteProductAPI(p.id))}
+              >
+                Delete
+              </button>
+            </div>
           </div>
-
-          <div className="flex flex-col gap-2">
-            <button
-              onClick={() => setEditProduct(p)}
-              className="bg-blue-500 text-white px-2 py-1 rounded"
-            >
-              Edit
-            </button>
-
-            <button
-              onClick={() => dispatch(deleteProductAPI(p.id))}
-              className="bg-red-500 text-white px-2 py-1 rounded"
-            >
-              Delete
-            </button>
-          </div>
-
-        </div>
-      ))}
-
+        ))}
+      </div>
     </div>
   )
 }
