@@ -3,8 +3,8 @@ import ProductList from './components/ProductList'
 
 function App() {
   return (
-    <div>
-      <h1>Stock Management</h1>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-5">
+      <h1 className="text-3xl font-bold mb-5">Gestion de Stock - Jewelry Boxes</h1>
       <ProductForm />
       <ProductList />
     </div>
