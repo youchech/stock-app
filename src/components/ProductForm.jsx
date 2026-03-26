@@ -9,7 +9,7 @@ function ProductForm({ editProduct, onFinishEdit }) {
     color: '',
     price: '',
     quantity: '',
-    dateVente: '',
+    dateAjout: '',
     image: null
   })
 
@@ -37,7 +37,7 @@ function ProductForm({ editProduct, onFinishEdit }) {
       dispatch(addProduct(form))
     }
 
-    setForm({ type: '', color: '', price: '', quantity: '', dateVente: '', image: null })
+    setForm({ type: '', color: '', price: '', quantity: '', dateAjout: '', image: null })
   }
 
   return (
@@ -46,7 +46,7 @@ function ProductForm({ editProduct, onFinishEdit }) {
       <input name="color" placeholder="Color" value={form.color} onChange={handleChange} className="border border-gray-300 rounded px-2 py-1 w-36" />
       <input name="price" type="number" placeholder="Price" value={form.price} onChange={handleChange} className="border border-gray-300 rounded px-2 py-1 w-24" />
       <input name="quantity" type="number" placeholder="Quantity" value={form.quantity} onChange={handleChange} className="border border-gray-300 rounded px-2 py-1 w-24" />
-      <input name="dateVente" type="date" value={form.dateVente} onChange={handleChange} className="border border-gray-300 rounded px-2 py-1" />
+      <input name="dateAjout" type="date" value={form.dateAjout} onChange={handleChange} className="border border-gray-300 rounded px-2 py-1" />
       <input type="file" accept="image/*" onChange={handleImage} className="border border-gray-300 rounded px-2 py-1 w-full sm:w-auto" />
       <button type="submit" className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
         {editProduct ? 'Update Product' : 'Add Product'}
